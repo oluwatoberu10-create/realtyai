@@ -236,3 +236,116 @@ body::after {
     transform: none;
   }
 }
+
+/* =====================================================================
+   Sales deck (/deck)
+   Slides are authored on a fixed 1600×900 stage (md and up) that is scaled
+   to fit the window, and reflow into a single scrolling column on phones.
+   ===================================================================== */
+.t-display { font-size: 2.6rem; line-height: 1.02; letter-spacing: -0.045em; font-weight: 600; }
+.t-h1 { font-size: 2rem; line-height: 1.06; letter-spacing: -0.04em; font-weight: 600; }
+.t-h3 { font-size: 1.1rem; line-height: 1.25; letter-spacing: -0.02em; font-weight: 600; }
+.t-lead { font-size: 1.05rem; line-height: 1.5; }
+.t-body { font-size: 0.95rem; line-height: 1.5; }
+.t-small { font-size: 0.85rem; line-height: 1.45; }
+.t-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+@container deck (width >= 48rem) {
+  .t-display { font-size: 5.75rem; }
+  .t-h1 { font-size: 3.9rem; }
+  .t-h3 { font-size: 1.55rem; }
+  .t-lead { font-size: 1.55rem; }
+  .t-body { font-size: 1.25rem; }
+  .t-small { font-size: 1.05rem; }
+  .t-label { font-size: 0.88rem; }
+}
+
+.deck-stage { width: 100%; container: deck / inline-size; }
+@media (width >= 48rem) {
+  .deck-stage {
+    width: 1600px;
+    height: 900px;
+    flex: none;
+    transform: scale(var(--s, 1));
+    transform-origin: center;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 40px 120px -40px rgb(0 0 0 / 0.9);
+  }
+  .deck-present .deck-stage { border-radius: 0; box-shadow: none; }
+}
+
+.slide {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 36px;
+  overflow-x: clip;
+  background: var(--color-canvas);
+}
+.slide-head { position: relative; display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+.slide-body { position: relative; flex: 1; }
+.slide-foot { position: relative; display: flex; justify-content: space-between; margin-top: 48px; }
+@container deck (width >= 48rem) {
+  .slide { position: absolute; inset: 0; padding: 0; overflow: hidden; min-height: 0; }
+  .slide-head { position: absolute; top: 44px; left: 80px; right: 80px; margin: 0; }
+  .slide-body { position: absolute; top: 118px; bottom: 96px; left: 80px; right: 80px; display: flex; flex-direction: column; }
+  .slide-foot { position: absolute; bottom: 38px; left: 80px; right: 80px; margin: 0; }
+}
+
+.slide-bg-charcoal { background: linear-gradient(180deg, #0d0f13, #090a0d); }
+.slide-bg-glow {
+  background:
+    radial-gradient(55% 60% at 78% 30%, rgb(61 107 255 / 0.2), transparent 70%),
+    radial-gradient(35% 40% at 5% 0%, rgb(201 173 122 / 0.07), transparent 70%),
+    var(--color-canvas);
+}
+.slide-bg-final {
+  background:
+    radial-gradient(60% 70% at 50% 115%, rgb(61 107 255 / 0.42), transparent 70%),
+    radial-gradient(30% 40% at 50% 105%, rgb(138 166 255 / 0.25), transparent 70%),
+    #050608;
+}
+.slide-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(60% 70% at 70% 35%, #000 10%, transparent 75%);
+}
+
+/* A slide re-mounts on every navigation, so its .rise children replay. */
+.slide-enter { animation: slide-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes slide-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.print-deck { display: none; }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  html, body { background: #07080a !important; }
+  body::after { display: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .deck-root { position: static !important; display: block !important; height: auto !important; }
+  .deck-screen { display: none !important; }
+  .print-deck { display: block; }
+  .print-page { position: relative; width: 1600px; height: 900px; overflow: hidden; break-after: page; container: deck / inline-size; }
+  .print-page:last-child { break-after: auto; }
+  .print-deck .rise,
+  .print-deck .slide-enter { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .print-deck .live-dot,
+  .print-deck .pipe-rail::after,
+  .print-deck .flow-line::after { animation: none !important; }
+  .print-deck .glass { backdrop-filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-enter { animation: none; }
+}
